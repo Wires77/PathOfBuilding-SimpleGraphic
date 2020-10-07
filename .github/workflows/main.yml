@@ -8,7 +8,17 @@ jobs:
                     uses: actions/checkout@v2
                     with:
                       submodules: 'recursive'
+                  - name: vcpkg cache
+                    uses: actions/cache@v1
+                    id: cache-vcpkg
+                    with:
+                      path: vcpkg
+                      # if the vcpkg hash or the set of dependencies change,
+                      # restore the most recently saved cache for the environment
+                      # if the build environment changes then start from scratch
+                      key: vcpkg-${{ hashFiles('**/vcpkg.txt') }}
                   - name: run-vcpkg
+                    if: steps.cache-vcpkg.outputs.cache-hit != 'true'
                     uses: lukka/run-vcpkg@v3.2
                     with:
                         vcpkgDirectory: '${{ github.workspace }}/vcpkg'
