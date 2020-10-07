@@ -15,13 +15,13 @@ jobs:
                         vcpkgArguments: '@${{ github.workspace }}/vcpkg.txt'
                         cleanAfterBuild: false
                   - name: Setup MSBuild
-                    uses: microsoft/setup-msbuild@v1.0.0
+                    uses: microsoft/setup-msbuild@v1.0.2
                   - name: Check dependencies
                     run: 'ls ${{ github.workspace }}/vcpkg/installed/x86-windows-static'
                   - name: Build DLL
                     run: 'msbuild SimpleGraphic.vcxproj /p:configuration=release /p:platform=win32'
                   - name: Archive DLL
-                    uses: actions/upload-artifact@v1.0.0
+                    uses: actions/upload-artifact@v2
                     with:
                         name: SimpleGraphic.dll
                         path: '${{ github.workspace }}/Release/SimpleGraphic.dll'
