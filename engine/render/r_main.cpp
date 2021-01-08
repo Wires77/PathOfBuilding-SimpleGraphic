@@ -646,7 +646,7 @@ void r_renderer_c::DrawImageQuad(r_shaderHnd_c* hnd, float x0, float y0, float x
 	curLayer->Quad(s0, t0, x0, y0, s1, t1, x1, y1, s2, t2, x2, y2, s3, t3, x3, y3);
 }
 
-void r_renderer_c::DrawString(float x, float y, int align, int height, const col4_t col, int font, const char* str)
+void r_renderer_c::DrawString(float x, float y, int align, int height, const col4_t col, int font, bool vertFlag, const char* str)
 {
 	if (font < 0 || font >= F_NUMFONTS) {
 		font = F_FIXED;
@@ -656,9 +656,9 @@ void r_renderer_c::DrawString(float x, float y, int align, int height, const col
 	if (col) {
 		col4_t tcol;
 		Vector4Copy(col, tcol);
-		fonts[font]->Draw(pos, align, height, tcol, str);
+		fonts[font]->Draw(pos, align, height, tcol, vertFlag, str);
 	} else {
-		fonts[font]->Draw(pos, align, height, drawColor, str);
+		fonts[font]->Draw(pos, align, height, drawColor, vertFlag, str);
 	}
 }
 

@@ -438,7 +438,7 @@ static int l_DrawString(lua_State* L)
 	static const char* fontMap[4] = { "FIXED", "VAR", "VAR BOLD", NULL };
 	ui->renderer->DrawString(
 		(float)lua_tonumber(L, 1), (float)lua_tonumber(L, 2), luaL_checkoption(L, 3, "LEFT", alignMap), 
-		(int)lua_tointeger(L, 4), NULL, luaL_checkoption(L, 5, "FIXED", fontMap), lua_tostring(L, 6)
+		(int)lua_tointeger(L, 4), NULL, luaL_checkoption(L, 5, "FIXED", fontMap), lua_toboolean(L, 7), lua_tostring(L, 6)
 	);
 	return 0;
 }

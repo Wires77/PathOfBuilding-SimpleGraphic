@@ -213,7 +213,7 @@ int	r_font_c::StringCursorIndex(int height, const char* str, int curX, int curY)
 	return lastIndex;
 }
 
-void r_font_c::DrawTextLine(scp_t pos, int align, int height, col4_t col, const char* str)
+void r_font_c::DrawTextLine(scp_t pos, int align, int height, col4_t col, bool verticalFlag, const char* str)
 {
 	// Check if the line is visible
 	if (pos[Y] >= renderer->sys->video->vid.size[1] || pos[Y] <= -height) {
@@ -256,6 +256,9 @@ void r_font_c::DrawTextLine(scp_t pos, int align, int height, col4_t col, const 
 		case F_RIGHT_X:
 			x = floor(pos[X] - width);
 			break;
+		case F_CENTRE_Y:
+			y = floor(pos[Y] - width / 2.0f);
+			break;
 		}
 	}
 
@@ -287,26 +290,46 @@ void r_font_c::DrawTextLine(scp_t pos, int align, int height, col4_t col, const 
 			continue;
 		}
 
-		// Draw glyph
-		f_glyph_s* glyph = fh->glyphs + *(str++);
-		x+= glyph->spLeft * scale;
-		if (glyph->width) {
-			double w = glyph->width * scale;
-			if (x + w >= 0 && x < renderer->sys->video->vid.size[0]) {
-				renderer->curLayer->Quad(
-					glyph->tcLeft, glyph->tcTop, x, y,
-					glyph->tcRight, glyph->tcTop, x + w, y,
-					glyph->tcRight, glyph->tcBottom, x + w, y + height,
-					glyph->tcLeft, glyph->tcBottom, x, y + height
-				);
+		if (!verticalFlag) {
+			// Draw glyph
+			f_glyph_s* glyph = fh->glyphs + *(str++);
+			x += glyph->spLeft * scale;
+			if (glyph->width) {
+				double w = glyph->width * scale;
+				if (x + w >= 0 && x < renderer->sys->video->vid.size[0]) {
+					renderer->curLayer->Quad(
+						glyph->tcLeft, glyph->tcTop, x, y,
+						glyph->tcRight, glyph->tcTop, x + w, y,
+						glyph->tcRight, glyph->tcBottom, x + w, y + height,
+						glyph->tcLeft, glyph->tcBottom, x, y + height
+					);
+				}
+				x += w;
 			}
-			x+= w;
+			x += glyph->spRight * scale;
 		}
-		x+= glyph->spRight * scale;
+		else {
+			// Draw glyph
+			f_glyph_s* glyph = fh->glyphs + *(str++);
+			y += glyph->spLeft * scale;
+			if (glyph->width) {
+				double w = glyph->width * scale;
+				if (y + w >= 0 && y < renderer->sys->video->vid.size[1]) {
+					renderer->curLayer->Quad(
+						glyph->tcLeft, glyph->tcTop, x + height, y,
+						glyph->tcRight, glyph->tcTop, x + height, y + w,
+						glyph->tcRight, glyph->tcBottom, x, y + w,
+						glyph->tcLeft, glyph->tcBottom, x, y
+					);
+				}
+				y += w;
+			}
+			y += glyph->spRight * scale;
+		}
 	}
 }
 
-void r_font_c::Draw(scp_t pos, int align, int height, col4_t col, const char* str)
+void r_font_c::Draw(scp_t pos, int align, int height, col4_t col, bool verticalFlag, const char* str)
 {
 	if (*str == 0) {
 		pos[Y]+= height;
@@ -320,7 +343,7 @@ void r_font_c::Draw(scp_t pos, int align, int height, col4_t col, const char* st
 	const char* lptr = str;
 	while (*lptr) {
 		if (*lptr != '\n') {
-			DrawTextLine(pos, align, height, col, lptr);
+			DrawTextLine(pos, align, height, col, verticalFlag, lptr);
 		}
 		pos[Y]+= height;
 		const char* nptr = strchr(lptr, '\n');
@@ -345,5 +368,5 @@ void r_font_c::VDraw(scp_t pos, int align, int height, col4_t col, const char* f
 	char str[65536];
 	vsnprintf(str, 65535, fmt, va);
 	str[65535] = 0;
-	Draw(pos, align, height, col, str);
+	Draw(pos, align, height, col, false, str);
 }

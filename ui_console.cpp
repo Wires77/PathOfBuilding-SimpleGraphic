@@ -155,7 +155,7 @@ void ui_console_c::Render()
 
 	// Draw info strings
 	liney = basey;
-	renderer->DrawString(0, liney, F_RIGHT, fontSize, colorGreen, F_FIXED, CFG_VERSION);
+	renderer->DrawString(0, liney, F_RIGHT, fontSize, colorGreen, F_FIXED, false, CFG_VERSION);
 	liney-= fontSize;
 	int memTotal = lua_gc(ui->L, LUA_GCCOUNT, 0);
 	for (dword i = 0; i < ui->subScriptSize; i++) {
@@ -178,7 +178,7 @@ void ui_console_c::Render()
 	int index = -1;
 	const char* l;
 	while (liney >= 0 && (l = sys->con->EnumLines(&index))) {
-		renderer->DrawString(0, liney, F_LEFT, fontSize, colorWhite, F_FIXED, l);
+		renderer->DrawString(0, liney, F_LEFT, fontSize, colorWhite, F_FIXED, false, l);
 		liney-= fontSize;
 	}
 
@@ -196,9 +196,9 @@ void ui_console_c::Render()
 	strcat_s(caretStr, 512, "_");
 
 	// Draw prompt, input text, and caret
-	renderer->DrawString(0, basey, F_LEFT, fontSize, colorWhite, F_FIXED, "]");
+	renderer->DrawString(0, basey, F_LEFT, fontSize, colorWhite, F_FIXED, false, "]");
 	renderer->DrawStringFormat(fontSize * 0.66f, basey, F_LEFT, fontSize, colorWhite, F_FIXED, "%s", input);
-	renderer->DrawString(fontSize * 0.66f, basey, F_LEFT, fontSize, colorWhite, F_FIXED, caretStr);
+	renderer->DrawString(fontSize * 0.66f, basey, F_LEFT, fontSize, colorWhite, F_FIXED, false, caretStr);
 }
 
 void ui_console_c::SetConInput(char* newInput, int newCaret)
