@@ -5,6 +5,7 @@
 //
 
 #include "ui_local.h"
+#include <algorithm>
 
 // ======
 // Locals
@@ -291,9 +292,14 @@ void ui_main_c::ScriptInit()
 {
 	sys->con->PrintFunc("UI Init");
 
+	bool isDevDirectory = false;
 	sys->con->Printf("Script: %s\n", scriptName);
 	if (scriptPath) {
 		sys->con->Printf("Script working directory: %s\n", scriptWorkDir);
+		char* pos = strrchr(scriptWorkDir, '\\');
+		if (pos && !strcmp(pos, "\\src")) {
+			isDevDirectory = true;
+		}
 	}
 	sys->video->SetTitle(scriptName);
 
@@ -312,8 +318,10 @@ void ui_main_c::ScriptInit()
 	lua_pushcfunction(L, traceback);
 	lua_pushvalue(L, -1);
 	lua_setfield(L, LUA_REGISTRYINDEX, "traceback");
-	lua_pushboolean(L, 1);
-	lua_setfield(L, LUA_REGISTRYINDEX, "LUA_NOENV");
+	if (!isDevDirectory) {
+		lua_pushboolean(L, 1);
+		lua_setfield(L, LUA_REGISTRYINDEX, "LUA_NOENV");
+	}
 
 	// Add libraries and APIs
 	lua_gc(L, LUA_GCSTOP, 0);
