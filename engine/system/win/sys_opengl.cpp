@@ -66,6 +66,10 @@ bool sys_openGL_c::Init(sys_glSet_s* set)
 	HWND hwnd = (HWND)sys->video->GetWindowHandle();
 	hdc = GetDC(hwnd);
 	hdc2 = GetDC(hwnd);
+	if (!hdc || !hdc2) {
+		sys->PrintLastError("\nGetDC() failed");
+		return true;
+	}
 
 	// Initialise pixel format
 	PIXELFORMATDESCRIPTOR pfd;
@@ -79,23 +83,28 @@ bool sys_openGL_c::Init(sys_glSet_s* set)
 	pfd.cStencilBits	= set->bStencil;
 
 	sys->con->Printf("Pixel format: need %d,%d,%d", pfd.cColorBits, pfd.cDepthBits, pfd.cStencilBits);
+	int pfi = 0;
+	try {
+		// Find pixel format
+		int pfi = ChoosePixelFormat(hdc, &pfd);
+		if (pfi == 0) {
+			sys->PrintLastError("\nChoosePixelFormat() failed");
+			return true;
+		}
 
-	// Find pixel format
-	int pfi = ChoosePixelFormat(hdc, &pfd);
-	if (pfi == 0) {
-		sys->PrintLastError("\nChoosePixelFormat() failed");
+		// Set pixel format
+		if (SetPixelFormat(hdc, pfi, &pfd) == 0 || true) {
+			sys->PrintLastError("\nSetPixelFormat() failed");
+			return true;
+		}
+
+		// Retrieve actual pixel format
+		DescribePixelFormat(hdc, pfi, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
+	}
+	catch(...) {
+		sys->PrintLastError("\nPixel formatting failed");
 		return true;
 	}
-
-	// Set pixel format
-	if (SetPixelFormat(hdc, pfi, &pfd) == 0) {
-		sys->PrintLastError("\nSetPixelFormat() failed");
-		return true;
-	}
-
-	// Retrieve actual pixel format
-	DescribePixelFormat(hdc, pfi, sizeof(PIXELFORMATDESCRIPTOR), &pfd);
-
 	sys->con->Printf(", using %d,%d,%d\n", pfd.cColorBits, pfd.cDepthBits, pfd.cStencilBits);
 
 	// Prepare secondary device
