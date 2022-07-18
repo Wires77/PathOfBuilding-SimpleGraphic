@@ -93,7 +93,7 @@ bool sys_openGL_c::Init(sys_glSet_s* set)
 		}
 
 		// Set pixel format
-		if (SetPixelFormat(hdc, pfi, &pfd) == 0 || true) {
+		if (SetPixelFormat(hdc, pfi, &pfd) == 0) {
 			sys->PrintLastError("\nSetPixelFormat() failed");
 			return true;
 		}
