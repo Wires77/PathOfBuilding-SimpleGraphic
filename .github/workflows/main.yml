@@ -2,7 +2,7 @@ name: Build DLL
 on: push     
 jobs:
   build_dll:
-          runs-on: windows-latest
+          runs-on: windows-2019
           steps:
                   - name: Checkout
                     uses: actions/checkout@v2
