@@ -166,7 +166,7 @@ int sys_video_c::Apply(sys_vidSet_s* set)
 	}
 
 	// Select window styles
-	int style = WS_POPUP;
+	int style = WS_POPUP | CS_OWNDC;
 	if ( !(cur.flags & VID_FULLSCREEN) && (cur.flags & VID_USESAVED || cur.flags & VID_RESIZABLE || cur.mode[0] < defRes[0] || cur.mode[1] < defRes[1]) ) {
 		style|= WS_CAPTION | WS_SYSMENU | WS_MINIMIZEBOX;
 		if (cur.flags & VID_RESIZABLE) {
